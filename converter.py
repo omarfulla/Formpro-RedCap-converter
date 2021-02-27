@@ -89,7 +89,9 @@ def write_to_csv(data, file_name='WIP'):
 if __name__ == '__main__':
     dictionary = pd.read_csv(r"C:\Users\Omar\Downloads\DataDictionary.csv", index_col =0, skiprows=0)
     data = pd.read_csv(r"C:\Users\Omar\Documents\New Exports\test.csv", sep=';')
-    data = data.fillna(-99)
+    print(data)
+    data = data.fillna(int(-99))
+    print(data)
     #data.replace(r'\d+\.0', 'new', regex=True)
     data.insert(1, 'redcap_event_name', 'us1_arm_2')
     only_date = dictionary[dictionary['Text Validation Type OR Show Slider Number'] == 'date_dmy']
