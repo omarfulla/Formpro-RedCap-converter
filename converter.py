@@ -10,8 +10,9 @@ def check_value(val):
     try:
         val = int(float(val))
     except ValueError:
-        print("not an int")
-        print(val.isdigit())
+        print('Please check this Value : {} in your file'.format(val))
+        #print("not an int")
+        #print(val.isdigit())
         return False
     else:
         if (val == -99):
@@ -47,10 +48,11 @@ def format_date(column, column_cpy):
             elif value == -99:
                 column_cpy[counter] = '1900-01-01'
             else:
-                print("\033[31m" + "Something went wrong" + '\033[0m')
+                # print("\033[31m" + "Something went wrong" + '\033[0m')
                 #collect rows which have an error, to highlight them later
+                print("This date has to be checked : {}".format(value))
                 errors.append(counter)
-    return column_cpy
+    return column_cpy, errors
 
 def multiple_choice(column):
     unique = [] # stores each given aswer once
@@ -88,12 +90,12 @@ def write_to_csv(data, file_name='WIP'):
 
 if __name__ == '__main__':
     dictionary = pd.read_csv(r"C:\Users\Omar\Downloads\DataDictionary.csv", index_col =0, skiprows=0)
-    data = pd.read_csv(r"C:\Users\Omar\Documents\New Exports\test.csv", sep=';')
+    data = pd.read_csv(r"C:\Users\Omar\Documents\New Exports\Z2_V_042017_DataBase.csv", sep=';')
     print(data)
     data = data.fillna(int(-99))
     print(data)
     #data.replace(r'\d+\.0', 'new', regex=True)
-    data.insert(1, 'redcap_event_name', 'us1_arm_2')
+    data.insert(1, 'redcap_event_name', 'z2_arm_2')
     only_date = dictionary[dictionary['Text Validation Type OR Show Slider Number'] == 'date_dmy']
     checkbox = dictionary[dictionary['Field Type'] == 'checkbox']
     keys = data.keys()
@@ -108,5 +110,6 @@ if __name__ == '__main__':
             list_of_new_cols = list(data.columns.values[old_cols - 1: old_cols + nof_new_cols])
             data = pd.concat([data, multiple_choice(column)], axis=1)
         elif(key in only_date.index):
-            data[key] = format_date(column, column_cpy)
-    write_to_csv(data, r"C:\Users\Omar\Documents\New Exports\test.csv")
+            data[key], errors = format_date(column, column_cpy)
+            #print(errors)
+    write_to_csv(data, r"C:\Users\Omar\Documents\New Exports\Z2_V_042017_DataBase.csv")
