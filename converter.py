@@ -10,9 +10,7 @@ def check_value(val):
     try:
         val = int(float(val))
     except ValueError:
-        print('Please check this Value : {} in your file'.format(val))
-        #print("not an int")
-        #print(val.isdigit())
+        print('{} should be a number in your file'.format(val))
         return False
     else:
         if (val == -99):
@@ -33,9 +31,12 @@ def format_date(column, column_cpy):
                                        + str(value)[1:-4] + "-" + str(0)
                                        + str(value)[:1])
             elif len(str(value)) == 8:
-                column_cpy[counter] = (str(value)[-4:] + "-"
-                                       + str(value)[2:-4] + "-"
-                                       + str(value)[:2])
+                if value == 99999999 :
+                    column_cpy[counter] = '1900-01-01'
+                else :
+                    column_cpy[counter] = (str(value)[-4:] + "-"
+                                         + str(value)[2:-4] + "-"
+                                         + str(value)[:2])
             elif len(str(value)) == 6:
                 #if year is less then 25 it must be 2025 or less
                 if int(str(value)[-2:]) <= 25:
@@ -90,12 +91,11 @@ def write_to_csv(data, file_name='WIP'):
 
 if __name__ == '__main__':
     dictionary = pd.read_csv(r"C:\Users\Omar\Downloads\DataDictionary.csv", index_col =0, skiprows=0)
-    data = pd.read_csv(r"C:\Users\Omar\Documents\New Exports\Z2_V_042017_DataBase.csv", sep=';')
-    print(data)
+    # dtype=str has been used to replace the -99.0 with -99
+    data = pd.read_csv(r"C:\Users\Omar\Documents\New Exports\Z5_V_042017_DataBase.csv", dtype=str, sep=';')
     data = data.fillna(int(-99))
-    print(data)
     #data.replace(r'\d+\.0', 'new', regex=True)
-    data.insert(1, 'redcap_event_name', 'z2_arm_2')
+    data.insert(1, 'redcap_event_name', 'z5_arm_2')
     only_date = dictionary[dictionary['Text Validation Type OR Show Slider Number'] == 'date_dmy']
     checkbox = dictionary[dictionary['Field Type'] == 'checkbox']
     keys = data.keys()
@@ -112,4 +112,4 @@ if __name__ == '__main__':
         elif(key in only_date.index):
             data[key], errors = format_date(column, column_cpy)
             #print(errors)
-    write_to_csv(data, r"C:\Users\Omar\Documents\New Exports\Z2_V_042017_DataBase.csv")
+    write_to_csv(data, r"C:\Users\Omar\Documents\New Exports\Z5_V_042017_DataBase.csv")
