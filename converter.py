@@ -10,7 +10,7 @@ def check_value(val):
     try:
         val = int(float(val))
     except ValueError:
-        print('{} should be a number in your file'.format(val))
+        #print('{} should be a number in your file'.format(val))
         return False
     else:
         if (val == -99):
@@ -24,6 +24,9 @@ def format_date(column, column_cpy):
     errors = []
     column = column.fillna(value=-99)
     for counter, value in enumerate(column):
+        # The line number is the index in Column + 2
+        # The index starts with 0 and the first line is the header
+        line = counter + 2
         if check_value(value):
             value = int(value)
             if len(str(value)) == 7:
@@ -49,10 +52,13 @@ def format_date(column, column_cpy):
             elif value == -99:
                 column_cpy[counter] = '1900-01-01'
             else:
+                print(f"Please correct the date ( {value} ) in line {line}")
                 # print("\033[31m" + "Something went wrong" + '\033[0m')
                 #collect rows which have an error, to highlight them later
-                print("This date has to be checked : {}".format(value))
+                # will not be used
                 errors.append(counter)
+        else:
+            print(f"The date ( {value} ) in line {line} should be a number to be converted to a date")
     return column_cpy, errors
 
 def multiple_choice(column):
@@ -60,7 +66,7 @@ def multiple_choice(column):
     col_vals = dict() # saves patients to each answer
     extradata = pd.DataFrame() # for the new columns
     for counter, value in enumerate(column):
-        matches = re.findall('([0-9.0]+)', str(value))
+        matches = re.findall('([0-9]+)', str(value))
         for numbers in matches:
             if check_value(numbers):
                 numbers = int(float(numbers))
@@ -92,10 +98,10 @@ def write_to_csv(data, file_name='WIP'):
 if __name__ == '__main__':
     dictionary = pd.read_csv(r"C:\Users\Omar\Downloads\DataDictionary.csv", index_col =0, skiprows=0)
     # dtype=str has been used to replace the -99.0 with -99
-    data = pd.read_csv(r"C:\Users\Omar\Documents\New Exports\Z5_V_042017_DataBase.csv", dtype=str, sep=';')
+    data = pd.read_csv(r"C:\Users\Omar\Documents\New Exports\test.csv", dtype=str, sep=';')
     data = data.fillna(int(-99))
     #data.replace(r'\d+\.0', 'new', regex=True)
-    data.insert(1, 'redcap_event_name', 'z5_arm_2')
+    data.insert(1, 'redcap_event_name', 'z10_arm_2')
     only_date = dictionary[dictionary['Text Validation Type OR Show Slider Number'] == 'date_dmy']
     checkbox = dictionary[dictionary['Field Type'] == 'checkbox']
     keys = data.keys()
@@ -112,4 +118,4 @@ if __name__ == '__main__':
         elif(key in only_date.index):
             data[key], errors = format_date(column, column_cpy)
             #print(errors)
-    write_to_csv(data, r"C:\Users\Omar\Documents\New Exports\Z5_V_042017_DataBase.csv")
+    write_to_csv(data, r"C:\Users\Omar\Documents\New Exports\test.csv")
